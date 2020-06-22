@@ -1,0 +1,13 @@
+spring:
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      discovery:
+        healthCheckInterval: 10s
+  application:
+    name: user
+  zipkin:
+    base-url: http://localhost:9411
+server:
+  port: 9004

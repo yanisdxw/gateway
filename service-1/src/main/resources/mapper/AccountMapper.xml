@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.dxw.cloud.account.AccountMapper">
+
+    <resultMap id="BaseResultMap" type="com.dxw.cloud.account.Account">
+        <result column="id" jdbcType="INTEGER" property="id" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="num" jdbcType="VARCHAR" property="num" />
+        <result column="create_time" jdbcType="DATE" property="createTime" />
+        <result column="balance" jdbcType="DOUBLE" property="balance"/>
+    </resultMap>
+
+    <sql id="BASE_COLUMN">
+        id,name,num,create_time,balance
+    </sql>
+
+    <select id="getAccountById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="BASE_COLUMN"/>
+        from account
+        where id = #{id}
+    </select>
+
+    <select id="getAccountByNum" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="BASE_COLUMN"/>
+        from account
+        where num = #{num}
+    </select>
+
+    <select id="getAllAccounts" resultMap="BaseResultMap">
+        select <include refid="BASE_COLUMN"/>
+        from account
+     </select>
+
+    <insert id="insertAccount" useGeneratedKeys="true" keyProperty="id" parameterType="com.dxw.cloud.account.Account">
+        insert into account (name,num,balance)
+        values (#{name,jdbcType=VARCHAR}, #{num,jdbcType=VARCHAR},#{balance,jdbcType=DOUBLE})
+    </insert>
+
+    <update id="updateById" parameterType="com.dxw.cloud.account.Account">
+        update account set balance=#{balance} where id=#{id}
+    </update>
+
+
+</mapper>

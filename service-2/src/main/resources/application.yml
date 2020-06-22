@@ -1,0 +1,23 @@
+spring:
+  datasource:
+    name: test
+    url: jdbc:mysql://192.168.198.129:3306/test?useUnicode=true&characterEncoding=utf-8&useSSL=false
+    username: root
+    password: Dxw314159
+    driver-class-name: com.mysql.jdbc.Driver
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      discovery:
+        healthCheckInterval: 10s
+  application:
+    name: account
+  zipkin:
+    base-url: http://localhost:9411
+server:
+  port: 9002
+
+mybatis:
+  type-aliases-package: com.dxw.cloud
+  mapper-locations: classpath:mapper/*.xml

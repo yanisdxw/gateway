@@ -1,0 +1,24 @@
+server:
+  port: 9003
+
+spring:
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      discovery:
+        health-check-path: /actuator/health
+        health-check-interval: 10s
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: account
+          uri: lb://account
+          predicates:
+            - Path=/cloud/**
+          filters:
+            - StripPrefix=1
+  application:
+    name: gateway
