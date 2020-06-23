@@ -7,6 +7,7 @@ import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.recipes.cache.*;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.zookeeper.CreateMode;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -16,12 +17,18 @@ import java.util.concurrent.Executors;
 
 @Service
 public class ZkService {
-    static final String CONNECT_ADDR = "192.168.198.129:2181";
+
+    @Value("${zkServer.host}")
+    private String HOST;
+
+    @Value("${zkServer.port}")
+    private String PORT;
 
     private static CuratorFramework client = null;
 
     @PostConstruct
     private void init(){
+        String CONNECT_ADDR = HOST+":"+PORT;
         //1 重试策略：初试时间为1s 重试10次
         RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 1);
         //2 通过工厂创建连接
