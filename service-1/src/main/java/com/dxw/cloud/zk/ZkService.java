@@ -1,4 +1,4 @@
-package com.dxw.cloud.zkClient;
+package com.dxw.cloud.zk;
 
 import lombok.SneakyThrows;
 import org.apache.curator.RetryPolicy;
@@ -26,11 +26,12 @@ public class ZkService {
 
     private static CuratorFramework client = null;
 
+    @SneakyThrows
     @PostConstruct
     private void init(){
         String CONNECT_ADDR = HOST+":"+PORT;
         //1 重试策略：初试时间为1s 重试10次
-        RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 1);
+        RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);
         //2 通过工厂创建连接
         client = CuratorFrameworkFactory.builder()
                 .connectString(CONNECT_ADDR)
@@ -38,6 +39,11 @@ public class ZkService {
                 .build();
         //3 开启连接
         client.start();
+        client.blockUntilConnected();
+    }
+
+    public CuratorFramework getClientInstance(){
+        return client;
     }
 
     @PreDestroy

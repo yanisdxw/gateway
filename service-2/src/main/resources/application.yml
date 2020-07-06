@@ -21,3 +21,7 @@ server:
 mybatis:
   type-aliases-package: com.dxw.cloud
   mapper-locations: classpath:mapper/*.xml
+
+zkServer:
+  host: 192.168.198.129
+  port: 2181
