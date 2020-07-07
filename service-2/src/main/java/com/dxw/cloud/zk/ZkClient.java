@@ -9,35 +9,62 @@ import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.x.discovery.ServiceInstance;
 import org.apache.curator.x.discovery.UriSpec;
 import org.apache.zookeeper.CreateMode;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import java.net.InetAddress;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Service
-public class ZkService {
+public class ZkClient {
 
-    @Value("${zkServer.host}")
-    private String HOST;
-
-    @Value("${zkServer.port}")
-    private String PORT;
-
-    @Value("${server.port}")
-    private Integer port;
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private static CuratorFramework client = null;
+    private static ServiceRegistry serviceRegistrar = null;
+
+    private String zookeeperServer;
+    private int sessionTimeoutMs;
+    private int connectionTimeoutMs;
+    private int baseSleepTimeMs;
+    private int maxRetries;
+
+    public void setZookeeperServer(String zookeeperServer) {
+        this.zookeeperServer = zookeeperServer;
+    }
+    public String getZookeeperServer() {
+        return zookeeperServer;
+    }
+    public void setSessionTimeoutMs(int sessionTimeoutMs) {
+        this.sessionTimeoutMs = sessionTimeoutMs;
+    }
+    public int getSessionTimeoutMs() {
+        return sessionTimeoutMs;
+    }
+    public void setConnectionTimeoutMs(int connectionTimeoutMs) {
+        this.connectionTimeoutMs = connectionTimeoutMs;
+    }
+    public int getConnectionTimeoutMs() {
+        return connectionTimeoutMs;
+    }
+    public void setBaseSleepTimeMs(int baseSleepTimeMs) {
+        this.baseSleepTimeMs = baseSleepTimeMs;
+    }
+    public int getBaseSleepTimeMs() {
+        return baseSleepTimeMs;
+    }
+    public void setMaxRetries(int maxRetries) {
+        this.maxRetries = maxRetries;
+    }
+    public int getMaxRetries() {
+        return maxRetries;
+    }
 
     @SneakyThrows
-    @PostConstruct
     private void init(){
-        String CONNECT_ADDR = HOST+":"+PORT;
+        String CONNECT_ADDR = zookeeperServer;
         //1 重试策略：初试时间为1s 重试10次
-        RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);
+        RetryPolicy retryPolicy = new ExponentialBackoffRetry(baseSleepTimeMs, maxRetries);
         //2 通过工厂创建连接
         client = CuratorFrameworkFactory.builder()
                 .connectString(CONNECT_ADDR)
@@ -105,7 +132,7 @@ public class ZkService {
             }
         };
         childrenCache.getListenable().addListener(childrenCacheListener);
-        System.out.println("Register zk watcher successfully!");
+        logger.info("Register zk watcher successfully!");
         childrenCache.start(PathChildrenCache.StartMode.POST_INITIALIZED_EVENT);
     }
 
@@ -119,10 +146,10 @@ public class ZkService {
         nodeCache.getListenable().addListener(new NodeCacheListener() {
             @Override
             public void nodeChanged() throws Exception {
-                System.out.println("the test node is change and result is :");
-                System.out.println("path : "+nodeCache.getCurrentData().getPath());
-                System.out.println("data : "+new String(nodeCache.getCurrentData().getData()));
-                System.out.println("stat : "+nodeCache.getCurrentData().getStat());
+                logger.info("the test node is change and result is :");
+                logger.info("path : "+nodeCache.getCurrentData().getPath());
+                logger.info("data : "+new String(nodeCache.getCurrentData().getData()));
+                logger.info("stat : "+nodeCache.getCurrentData().getStat());
             }
         });
         nodeCache.start();
@@ -144,20 +171,20 @@ public class ZkService {
                 if(data !=null){
                     switch (event.getType()) {
                         case NODE_ADDED:
-                            System.out.println("NODE_ADDED : "+ data.getPath() +"  数据:"+ new String(data.getData()));
+                            logger.info("NODE_ADDED : "+ data.getPath() +"  数据:"+ new String(data.getData()));
                             break;
                         case NODE_REMOVED:
-                            System.out.println("NODE_REMOVED : "+ data.getPath() +"  数据:"+ new String(data.getData()));
+                            logger.info("NODE_REMOVED : "+ data.getPath() +"  数据:"+ new String(data.getData()));
                             break;
                         case NODE_UPDATED:
-                            System.out.println("NODE_UPDATED : "+ data.getPath() +"  数据:"+ new String(data.getData()));
+                            logger.info("NODE_UPDATED : "+ data.getPath() +"  数据:"+ new String(data.getData()));
                             break;
 
                         default:
                             break;
                     }
                 }else{
-                    System.out.println( "data is null : "+ event.getType());
+                    logger.info( "data is null : "+ event.getType());
                 }
             }
         });
@@ -167,19 +194,37 @@ public class ZkService {
 
     public void registry(String name){
         try {
-            InetAddress address = InetAddress.getLocalHost();
-            ServiceRegistry serviceRegistrar = new ServiceRegistry(client, name);
+            if(serviceRegistrar==null){
+                serviceRegistrar = new ServiceRegistry(client, Config.name);
+            }
             ServiceInstance<InstanceDetails> instance = ServiceInstance.<InstanceDetails>builder()
                     .name(name)
-                    .port(port)
-                    .address(address.getHostAddress())   //address不写的话，会取本地ip
-                    .payload(new InstanceDetails())
+                    .port(Config.port)
+                    .address(Config.host)   //address不写的话，会取本地ip
+                    .payload(new InstanceDetails("注册服务s2"))
                     .uriSpec(new UriSpec("{scheme}://{address}:{port}"))
                     .build();
             serviceRegistrar.registerService(instance);
         }catch (Exception e){
-            System.out.println("注册失败");
-            e.printStackTrace();
+            logger.error("注册失败",e);
         }
+    }
+
+    public void unregister(String name){
+        try {
+            serviceRegistrar.unregisterService(name);
+        }catch (Exception e){
+            logger.error("取消注册失败",e);
+        }
+    }
+
+    public void stop() {
+        serviceRegistrar.unregisterService();
+        client.close();
+        logger.info("已断开zk链接！");
+    }
+
+    public CuratorFramework getClient() {
+        return client;
     }
 }
