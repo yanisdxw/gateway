@@ -192,7 +192,7 @@ public class ZkClient {
         treeCache.start();
     }
 
-    public void registry(String name){
+    public void registry(String name, InstanceDetails instanceDetails){
         try {
             if(serviceRegistrar==null){
                 serviceRegistrar = new ServiceRegistry(client, Config.name);
@@ -201,7 +201,7 @@ public class ZkClient {
                     .name(name)
                     .port(Config.port)
                     .address(Config.host)   //address不写的话，会取本地ip
-                    .payload(new InstanceDetails("注册服务s2"))
+                    .payload(instanceDetails)
                     .uriSpec(new UriSpec("{scheme}://{address}:{port}"))
                     .build();
             serviceRegistrar.registerService(instance);

@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 public class InstanceDetails {
-    public static final String ROOT_PATH = "/service";
 
     /** 该服务拥有哪些方法 */
     public Map<String,Service> services = new HashMap<>();

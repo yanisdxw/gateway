@@ -1,5 +1,6 @@
 package com.dxw.cloud;
 
+import com.dxw.cloud.zk.InstanceDetails;
 import com.dxw.cloud.zk.ServiceListener;
 import com.dxw.cloud.zk.ZkClient;
 import lombok.SneakyThrows;
@@ -18,13 +19,11 @@ public class Server2Application {
     public static void main(String[] args) {
         ApplicationContext context = SpringApplication.run(Server2Application.class, args);
         ZkClient zkClient = context.getBean(ZkClient.class);
-        zkClient.registry("service1");
+        zkClient.registry("service1", new InstanceDetails("注册服务s2"));
         ServiceListener serviceListener = context.getBean(ServiceListener.class);
         serviceListener.Listen("service1");
         Thread t = new Thread(serviceListener);
         t.start();
-        Thread.sleep(1000*20);
-        zkClient.stop();
     }
 
 }

@@ -23,5 +23,8 @@ mybatis:
   mapper-locations: classpath:mapper/*.xml
 
 zkServer:
-  host: 192.168.198.129
-  port: 2181
+  server: 192.168.198.129:2181
+  sessionTimeoutMs: 6000
+  connectionTimeoutMs: 6000
+  maxRetries: 3
+  baseSleepTimeMs: 1000
