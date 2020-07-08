@@ -110,30 +110,31 @@ public class ZkClient {
     @SneakyThrows
     public void setPathCacheListenter(String path) {
         ExecutorService pool = Executors.newCachedThreadPool();
-        PathChildrenCache childrenCache = new PathChildrenCache(client, path, true);
-        PathChildrenCacheListener childrenCacheListener = new PathChildrenCacheListener() {
-            @Override
-            public void childEvent(CuratorFramework client, PathChildrenCacheEvent event) throws Exception {
-                System.out.println("开始进行事件分析:-----");
-                ChildData data = event.getData();
-                switch (event.getType()) {
-                    case CHILD_ADDED:
-                        System.out.println("CHILD_ADDED : "+ data.getPath() +"  数据:"+ data.getData());
-                        break;
-                    case CHILD_REMOVED:
-                        System.out.println("CHILD_REMOVED : "+ data.getPath() +"  数据:"+ data.getData());
-                        break;
-                    case CHILD_UPDATED:
-                        System.out.println("CHILD_UPDATED : "+ data.getPath() +"  数据:"+ data.getData());
-                        break;
-                    default:
-                        break;
+        try (PathChildrenCache childrenCache = new PathChildrenCache(client, path, true)) {
+            PathChildrenCacheListener childrenCacheListener = new PathChildrenCacheListener() {
+                @Override
+                public void childEvent(CuratorFramework client, PathChildrenCacheEvent event) throws Exception {
+                    System.out.println("开始进行事件分析:-----");
+                    ChildData data = event.getData();
+                    switch (event.getType()) {
+                        case CHILD_ADDED:
+                            System.out.println("CHILD_ADDED : " + data.getPath() + "  数据:" + data.getData());
+                            break;
+                        case CHILD_REMOVED:
+                            System.out.println("CHILD_REMOVED : " + data.getPath() + "  数据:" + data.getData());
+                            break;
+                        case CHILD_UPDATED:
+                            System.out.println("CHILD_UPDATED : " + data.getPath() + "  数据:" + data.getData());
+                            break;
+                        default:
+                            break;
+                    }
                 }
-            }
-        };
-        childrenCache.getListenable().addListener(childrenCacheListener);
-        logger.info("Register zk watcher successfully!");
-        childrenCache.start(PathChildrenCache.StartMode.POST_INITIALIZED_EVENT);
+            };
+            childrenCache.getListenable().addListener(childrenCacheListener);
+            logger.info("Register zk watcher successfully!");
+            childrenCache.start(PathChildrenCache.StartMode.POST_INITIALIZED_EVENT);
+        }
     }
 
     //2.Node Cache  监控本节点的变化情况   连接 目录 是否压缩

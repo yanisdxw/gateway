@@ -195,7 +195,7 @@ public class ZkClient {
     public void registry(String name, InstanceDetails instanceDetails){
         try {
             if(serviceRegistrar==null){
-                serviceRegistrar = new ServiceRegistry(client, Config.name);
+                serviceRegistrar = new ServiceRegistry(client, Config.zkName);
             }
             ServiceInstance<InstanceDetails> instance = ServiceInstance.<InstanceDetails>builder()
                     .name(name)
@@ -216,6 +216,11 @@ public class ZkClient {
         }catch (Exception e){
             logger.error("取消注册失败",e);
         }
+    }
+
+    public void tryElection(LeaderSelect leaderSelect){
+        leaderSelect.init(client);
+        leaderSelect.start();
     }
 
     public void stop() {

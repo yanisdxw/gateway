@@ -85,7 +85,7 @@ public class ServiceListener implements Runnable {
 
         serviceDiscovery = ServiceDiscoveryBuilder.builder(InstanceDetails.class)
                 .client(client)
-                .basePath(Config.name)
+                .basePath(Config.zkName)
                 .serializer(new JsonInstanceSerializer<InstanceDetails>(InstanceDetails.class))
                 .build();
         serviceDiscovery.start();
@@ -121,8 +121,9 @@ public class ServiceListener implements Runnable {
                 InstanceDetails payload = service.getPayload();
                 //服务描述
                 String serviceDesc = payload.getServiceDesc();
-                System.out.println(serviceDesc);
+                System.out.println(serviceDesc+"-"+uriSpec);
             }
+            Thread.sleep(1 * 1000);
             System.out.println("---------------------");
         }
     }

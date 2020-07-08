@@ -1,8 +1,6 @@
 package com.dxw.cloud;
 
-import com.dxw.cloud.zk.InstanceDetails;
-import com.dxw.cloud.zk.ServiceListener;
-import com.dxw.cloud.zk.ZkClient;
+import com.dxw.cloud.zk.*;
 import lombok.SneakyThrows;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -20,6 +18,8 @@ public class Server2Application {
         ApplicationContext context = SpringApplication.run(Server2Application.class, args);
         ZkClient zkClient = context.getBean(ZkClient.class);
         zkClient.registry("service1", new InstanceDetails("注册服务s2"));
+        LeaderElectionSelector leaderSelector = new LeaderElectionSelector("/"+ Config.zkName, "注册服务s2");
+        zkClient.tryElection(leaderSelector);
         ServiceListener serviceListener = context.getBean(ServiceListener.class);
         serviceListener.Listen("service1");
         Thread t = new Thread(serviceListener);
