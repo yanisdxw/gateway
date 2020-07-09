@@ -9,6 +9,7 @@ import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.x.discovery.ServiceInstance;
 import org.apache.curator.x.discovery.UriSpec;
 import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,6 +88,12 @@ public class ZkClient {
     @SneakyThrows
     public void createNode(String path, String nodeData){
         client.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(path,nodeData.getBytes());
+    }
+
+    @SneakyThrows
+    public boolean checkExist(String path){
+        Stat stat = client.checkExists().forPath(path);
+        return stat!=null;
     }
 
     @SneakyThrows

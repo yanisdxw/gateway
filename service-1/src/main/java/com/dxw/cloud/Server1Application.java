@@ -16,7 +16,7 @@ public class Server1Application {
         ApplicationContext context = SpringApplication.run(Server1Application.class, args);
         ZkClient zkClient = context.getBean(ZkClient.class);
         zkClient.registry("service1", new InstanceDetails("注册服务s1"));
-        LeaderElectionSelector leaderSelector = new LeaderElectionSelector("/"+Config.zkName, "注册服务s1");
+        LeaderSelect leaderSelector = new LeaderElectionSelector("/"+Config.zkName, "注册服务s1");
         zkClient.tryElection(leaderSelector);
         ServiceListener serviceListener = context.getBean(ServiceListener.class);
         serviceListener.Listen("service1");

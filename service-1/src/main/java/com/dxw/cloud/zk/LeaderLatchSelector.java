@@ -15,7 +15,7 @@ public class LeaderLatchSelector implements LeaderSelect {
         leaderLatch = new LeaderLatch(curatorFramework, path, name);
     }
 
-    private LeaderLatchSelector(String path, String name){
+    public LeaderLatchSelector(String path, String name){
         this.name = name;
         this.path = path;
     };
