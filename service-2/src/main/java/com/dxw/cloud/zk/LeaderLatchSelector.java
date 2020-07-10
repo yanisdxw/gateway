@@ -1,28 +1,50 @@
 package com.dxw.cloud.zk;
 
 import lombok.SneakyThrows;
+import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.recipes.leader.LeaderLatch;
 import org.apache.curator.framework.recipes.leader.LeaderLatchListener;
+import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.data.Stat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class LeaderLatchSelector implements LeaderSelect {
+public class LeaderLatchSelector extends LeaderSelect {
 
     private LeaderLatch leaderLatch;
     private String name;
     private String path;
-    private CuratorFramework client;
 
-    public void init(CuratorFramework curatorFramework){
-        leaderLatch = new LeaderLatch(curatorFramework, path, name);
-        client = curatorFramework;
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static CuratorFramework client = null;
+
+    @SneakyThrows
+    private void init(){
+        String CONNECT_ADDR = super.getZookeeperServer();
+        //1 重试策略：初试时间为1s 重试10次
+        RetryPolicy retryPolicy = new ExponentialBackoffRetry(super.getBaseSleepTimeMs(), super.getMaxRetries());
+        //2 通过工厂创建连接
+        client = CuratorFrameworkFactory.builder()
+                .connectString(CONNECT_ADDR)
+                .retryPolicy(retryPolicy)
+                .build();
+        //3 开启连接
+        client.start();
+        client.blockUntilConnected();
     }
 
-    public LeaderLatchSelector(String path, String name){
+    public void setPath(String path, String name){
         this.name = name;
         this.path = path;
+        leaderLatch = new LeaderLatch(client, path, name);
     };
+
+    public LeaderLatchSelector(){
+
+    }
 
     @SneakyThrows
     public void start(){

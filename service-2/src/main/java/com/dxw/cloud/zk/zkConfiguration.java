@@ -39,4 +39,26 @@ public class zkConfiguration {
         serviceListener.setBaseSleepTimeMs(baseSleepTimeMs);
         return serviceListener;
     }
+
+    @Bean(initMethod = "init")
+    public LeaderElectionSelector leaderElectionSelector(){
+        LeaderElectionSelector leaderElectionSelector = new LeaderElectionSelector();
+        leaderElectionSelector.setZookeeperServer(zookeeperServer);
+        leaderElectionSelector.setSessionTimeoutMs(sessionTimeoutMs);
+        leaderElectionSelector.setConnectionTimeoutMs(connectionTimeoutMs);
+        leaderElectionSelector.setMaxRetries(maxRetries);
+        leaderElectionSelector.setBaseSleepTimeMs(baseSleepTimeMs);
+        return leaderElectionSelector;
+    }
+
+    @Bean(initMethod = "init")
+    public LeaderLatchSelector leaderLatchSelector(){
+        LeaderLatchSelector leaderLatchSelector = new LeaderLatchSelector();
+        leaderLatchSelector.setZookeeperServer(zookeeperServer);
+        leaderLatchSelector.setSessionTimeoutMs(sessionTimeoutMs);
+        leaderLatchSelector.setConnectionTimeoutMs(connectionTimeoutMs);
+        leaderLatchSelector.setMaxRetries(maxRetries);
+        leaderLatchSelector.setBaseSleepTimeMs(baseSleepTimeMs);
+        return leaderLatchSelector;
+    }
 }

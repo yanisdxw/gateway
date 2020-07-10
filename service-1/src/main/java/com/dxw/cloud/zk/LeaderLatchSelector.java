@@ -1,24 +1,28 @@
 package com.dxw.cloud.zk;
 
 import lombok.SneakyThrows;
-import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.leader.LeaderLatch;
 import org.apache.curator.framework.recipes.leader.LeaderLatchListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class LeaderLatchSelector implements LeaderSelect {
+public class LeaderLatchSelector extends ZkBaseClient {
 
     private LeaderLatch leaderLatch;
     private String name;
     private String path;
 
-    public void init(CuratorFramework curatorFramework){
-        leaderLatch = new LeaderLatch(curatorFramework, path, name);
-    }
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public LeaderLatchSelector(String path, String name){
+    public void setPath(String path, String name){
         this.name = name;
         this.path = path;
+        leaderLatch = new LeaderLatch(super.getClientInstance(), path, name);
     };
+
+    public LeaderLatchSelector(){
+
+    }
 
     @SneakyThrows
     public void start(){
