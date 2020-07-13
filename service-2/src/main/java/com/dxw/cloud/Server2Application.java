@@ -1,5 +1,6 @@
 package com.dxw.cloud;
 
+import com.dxw.cloud.config.Config;
 import com.dxw.cloud.zk.*;
 import dxw.zk.LeaderElectionSelector;
 import dxw.zk.ServiceListener;

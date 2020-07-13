@@ -1,4 +1,4 @@
-package com.dxw.cloud.zk;
+package com.dxw.cloud.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;

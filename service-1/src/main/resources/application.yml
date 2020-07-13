@@ -23,7 +23,6 @@ mybatis:
   mapper-locations: classpath:mapper/*.xml
 
 zkServer:
-  name: test
   server: 192.168.198.129:2181
   sessionTimeoutMs: 6000
   connectionTimeoutMs: 6000

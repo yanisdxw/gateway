@@ -1,10 +1,10 @@
 package com.dxw.cloud;
 
+import com.dxw.cloud.config.Config;
 import com.dxw.cloud.zk.*;
 import dxw.zk.LeaderElectionSelector;
 import dxw.zk.ServiceListener;
 import dxw.zk.ZkClient;
-import dxw.zk.ZkConfig;
 import dxw.zk.bean.InstanceDetails;
 import lombok.SneakyThrows;
 import org.springframework.boot.SpringApplication;
