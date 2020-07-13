@@ -1,4 +1,4 @@
-package com.dxw.cloud.zk;
+package dxw.zk;
 
 import lombok.SneakyThrows;
 import org.apache.curator.RetryPolicy;
@@ -14,6 +14,14 @@ public abstract class ZkBaseClient {
     private int baseSleepTimeMs;
     private int maxRetries;
     private static CuratorFramework client = null;
+
+    public void setZookeeperConfig(ZkConfig zookeeperConfig){
+        this.zookeeperServer = zookeeperConfig.zkServer;
+        this.sessionTimeoutMs = zookeeperConfig.sessionTimeoutMs;
+        this.connectionTimeoutMs = zookeeperConfig.connectionTimeoutMs;
+        this.baseSleepTimeMs = zookeeperConfig.baseSleepTimeMs;
+        this.maxRetries = zookeeperConfig.maxRetries;
+    }
 
     public void setZookeeperServer(String zookeeperServer) {
         this.zookeeperServer = zookeeperServer;

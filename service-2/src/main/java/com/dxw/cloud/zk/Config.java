@@ -15,12 +15,8 @@ public class Config {
     public static String host;
     /** 本节点端口 */
     public static int port;
-    /** 节点名称*/
+    /** spring节点名称*/
     public static String name;
-    /** zk节点名称*/
-    public static String zkName;
-    /** zk服务地址*/
-    public static String zkServer;
 
     private static Environment Env;
 
@@ -38,7 +34,5 @@ public class Config {
         }
         port = Integer.valueOf(Env.getProperty("server.port"));
         name = Env.getProperty("spring.application.name");
-        zkName = Env.getProperty("zkServer.name");
-        zkServer = Env.getProperty("zkServer.server");
     }
 }

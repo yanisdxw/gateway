@@ -1,4 +1,4 @@
-package com.dxw.cloud.zk;
+package dxw.zk;
 
 import lombok.SneakyThrows;
 import org.apache.curator.framework.recipes.leader.LeaderLatch;

@@ -1,10 +1,7 @@
-package com.dxw.cloud.zk;
+package dxw.zk;
 
+import dxw.zk.bean.InstanceDetails;
 import lombok.SneakyThrows;
-import org.apache.curator.RetryPolicy;
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.CuratorFrameworkFactory;
-import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.x.discovery.ServiceDiscovery;
 import org.apache.curator.x.discovery.ServiceDiscoveryBuilder;
 import org.apache.curator.x.discovery.ServiceInstance;
@@ -34,7 +31,7 @@ public class ServiceListener extends ZkBaseClient implements Runnable {
     public void Listen(String name){
         serviceDiscovery = ServiceDiscoveryBuilder.builder(InstanceDetails.class)
                 .client(getClientInstance())
-                .basePath(Config.zkName)
+                .basePath(name)
                 .serializer(new JsonInstanceSerializer<InstanceDetails>(InstanceDetails.class))
                 .build();
         serviceDiscovery.start();

@@ -1,5 +1,6 @@
-package com.dxw.cloud.zk;
+package dxw.zk;
 
+import dxw.zk.bean.InstanceDetails;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.x.discovery.ServiceDiscovery;
 import org.apache.curator.x.discovery.ServiceDiscoveryBuilder;

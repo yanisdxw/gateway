@@ -1,4 +1,4 @@
-package com.dxw.cloud.zk;
+package dxw.zk.bean;
 
 import java.util.HashMap;
 import java.util.List;

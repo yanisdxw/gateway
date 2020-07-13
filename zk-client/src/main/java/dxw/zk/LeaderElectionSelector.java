@@ -1,5 +1,6 @@
-package com.dxw.cloud.zk;
+package dxw.zk;
 
+import dxw.zk.bean.InstanceTask;
 import lombok.SneakyThrows;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.leader.LeaderSelector;
@@ -24,6 +25,7 @@ public class LeaderElectionSelector extends ZkBaseClient implements LeaderSelect
     public AtomicInteger leaderCount = new AtomicInteger(1);
     /**执行任务的异步线程池*/
     private static final ExecutorService pool = Executors.newCachedThreadPool();
+    private InstanceTask task;
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -48,10 +50,17 @@ public class LeaderElectionSelector extends ZkBaseClient implements LeaderSelect
         leaderSelector.start();
     }
 
+    public void setTask(InstanceTask task){
+        this.task = task;
+    }
+
     @Override
     public void takeLeadership(CuratorFramework cf) throws Exception {
         System.out.println(name + "第"+leaderCount.getAndIncrement()+"次当选为leader!");
-        task();
+        if(task!=null) {
+            task.init(super.getClientInstance());
+            task.run();
+        }
         System.out.println(name + "放弃领导权");
 
     }
